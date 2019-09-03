@@ -61,6 +61,35 @@ module.exports = function (ctx) {
     supportIE: true,
 
     build: {
+      env: ctx.dev
+      ? {
+        OIDC_AUTHORITY: JSON.stringify(''),
+        OIDC_CLIENTID: JSON.stringify(''),
+        OIDC_REDIRECT_URI: JSON.stringify(''),
+        OIDC_RESPONSE_TYPE: JSON.stringify('id_token token'),
+        OIDC_SCOPE: JSON.stringify('openid profile'),
+        OIDC_SILENT_REDIRECT_URI: JSON.stringify('/silent-renew.html'),
+        REDIRECT_CALLBACK: JSON.stringify('/'),
+        API: JSON.stringify(''),
+        ROTA_SSO: JSON.stringify('/'),
+        VERSION_APP: JSON.stringify(require('./package.json').version),
+        MULTISESSION: JSON.stringify(''),
+        ESCAPELINK: JSON.stringify('')
+      }
+      : {
+        OIDC_AUTHORITY: JSON.stringify(''),
+        OIDC_CLIENTID: JSON.stringify(''),
+        OIDC_REDIRECT_URI: JSON.stringify(''),
+        OIDC_RESPONSE_TYPE: JSON.stringify('id_token token'),
+        OIDC_SCOPE: JSON.stringify('openid profile'),
+        OIDC_SILENT_REDIRECT_URI: JSON.stringify('/silent-renew.html'),
+        REDIRECT_CALLBACK: JSON.stringify(''),
+        API: JSON.stringify(''),
+        ROTA_SSO: JSON.stringify('/'),
+        VERSION_APP: JSON.stringify(require('./package.json').version),
+        MULTISESSION: JSON.stringify(''),
+        ESCAPELINK: JSON.stringify('')
+      },
       scopeHoisting: true,
       // vueRouterMode: 'history',
       // vueCompiler: true,
