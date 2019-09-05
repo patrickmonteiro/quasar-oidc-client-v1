@@ -6,6 +6,15 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Index.vue') }
     ]
+  },
+  {
+    path: '/',
+    component: () => import('layouts/oidc'),
+    children: [
+      { path: '/callback', component: () => import('pages/oidc/callback') },
+      { path: '/accessdenied', component: () => import('pages/oidc/accessDenied') },
+      { path: '/silentRenew', component: () => import('pages/oidc/silentRenew') }
+    ]
   }
 ]
 

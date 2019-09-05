@@ -7,7 +7,8 @@ module.exports = function (ctx) {
     // --> boot files are part of "main.js"
     boot: [
       'i18n',
-      'axios'
+      'axios',
+      'security-oidc'
     ],
 
     css: [
@@ -49,12 +50,14 @@ module.exports = function (ctx) {
       ],
 
       directives: [
-        'Ripple'
+        'Ripple',
+        'ClosePopup'
       ],
 
       // Quasar plugins
       plugins: [
-        'Notify'
+        'Notify',
+        'Dialog'
       ]
     },
 
@@ -63,18 +66,18 @@ module.exports = function (ctx) {
     build: {
       env: ctx.dev
       ? {
-        OIDC_AUTHORITY: JSON.stringify(''),
-        OIDC_CLIENTID: JSON.stringify(''),
-        OIDC_REDIRECT_URI: JSON.stringify(''),
+        OIDC_AUTHORITY: JSON.stringify('https://desenv-wspa02/sso'),
+        OIDC_CLIENTID: JSON.stringify('ddba7325-e1f4-4ba9-9f58-22d51e411912'),
+        OIDC_REDIRECT_URI: JSON.stringify('http://localhost:8080/#/callback#'),
         OIDC_RESPONSE_TYPE: JSON.stringify('id_token token'),
         OIDC_SCOPE: JSON.stringify('openid profile'),
         OIDC_SILENT_REDIRECT_URI: JSON.stringify('/silent-renew.html'),
         REDIRECT_CALLBACK: JSON.stringify('/'),
-        API: JSON.stringify(''),
+        API: JSON.stringify('https://desenv-wspa02/apissalocalhost/api/v1/'),
         ROTA_SSO: JSON.stringify('/'),
         VERSION_APP: JSON.stringify(require('./package.json').version),
-        MULTISESSION: JSON.stringify(''),
-        ESCAPELINK: JSON.stringify('')
+        MULTISESSION: JSON.stringify('wss://desenv-wspa02/sso/ws/v1/multisessao'),
+        ESCAPELINK: JSON.stringify('http://www.google.com')
       }
       : {
         OIDC_AUTHORITY: JSON.stringify(''),

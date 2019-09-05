@@ -98,11 +98,120 @@ export default {
   name: 'MyLayout',
   data () {
     return {
-      leftDrawerOpen: false
+      leftDrawerOpen: false,
+      userinfo: {},
+      signedIn: false,
+      transacoes: [],
+      dialogMS: null
     }
   },
+  created () {
+    this.$mgr.getUser().then(
+      success => {
+        this.userinfo = success
+        if (success.profile.transacoes) {
+          if (Array.isArray(success.profile.transacoes)) {
+            this.ws(success.profile.vchLogin)
+            success.profile.transacoes.forEach(element => {
+              this.transacoes.push(JSON.parse(element))
+            })
+          } else {
+            this.ws(success.profile.vchLogin)
+            this.transacoes.push(JSON.parse(success.profile.transacoes))
+          }
+        }
+        // success.profile.transacoes.forEach(element => {
+        //   this.transacoes.push(JSON.parse(element))
+        // })
+      },
+      err => {
+        console.log('Erro na recuperação de usuário page: layout/default.vue', err)
+      }
+    )
+  },
+  mounted () {
+    this.verificaVersaoNoCache()
+    this.$mgr.getSignedIn().then(
+      success => {
+        this.signedIn = success
+      },
+      err => {
+        this.signedIn = err
+        console.log('NÃO ESTÁ LOGADO', err)
+      }
+    )
+  },
+  ready () {
+    window.onunload = this.unloadWindow
+  },
   methods: {
-    openURL
+    openURL,
+    verificaVersaoNoCache () {
+      if (localStorage.getItem('w3_NOMEAPP_version') !== process.env.VERSION_APP) {
+        localStorage.setItem('w3_NOMEAPP_version', process.env.VERSION_APP)
+        setTimeout(() => {
+          window.location.reload(true)
+        }, 300)
+      }
+    },
+    unloadWindow () {
+      if (this.$connectionMulti) {
+        this.$connectionMulti().close()
+      }
+    },
+    ws (login) {
+      // console.log('WS')
+      // console.log(login)
+      const ws = new WebSocket(`${process.env.MULTISESSION}?clientId=ssa&usuario=${login}`)
+      ws.onopen = () => console.log('Ws Connected')
+      ws.onerror = () => console.log('Error on ws')
+      ws.onmessage = (evt) => {
+        var obj = JSON.parse(evt.data)
+        console.log(obj.action)
+        switch (obj.action) {
+          case 'contar':
+            if (obj.count > 1) {
+              if (this.dialogMS == null) {
+                this.dialogMS = this.$q.dialog({
+                  title: 'Aviso',
+                  message: 'Existe outra sessão aberta para este usuário.',
+                  color: 'primary',
+                  ok: 'Continuar',
+                  cancel: 'Sair',
+                  persistent: true
+                })
+                  .onOk(() => {
+                    ws.send(JSON.stringify({ action: 'ficar' }))
+                    this.dialogMS = null
+                  }).onCancel(() => {
+                    ws.send(JSON.stringify({ action: 'sair' }))
+                  })
+                // this.dialogMS.then(() => {
+                //   ws.send(JSON.stringify({ action: 'ficar' }))
+                //   this.dialogMS = null
+                // }).catch(() => {
+                //   ws.send(JSON.stringify({ action: 'sair' }))
+                // })
+              }
+            } else {
+              if (this.dialogMS) {
+                document.getElementsByClassName('modal-buttons row')[0].children[1].click()
+              }
+            }
+            break
+          case 'ficar':
+            console.log(this.dialogMS)
+            document.getElementsByClassName('modal-buttons row')[0].children[1].click()
+            break
+          case 'sair':
+            // console.log('OBJETOOOOOOO', store.dispatch('Auth/setLogout'))
+            window.location.href = process.env.ESCAPELINK
+            break
+          default:
+            break
+        }
+      }
+    }
   }
 }
 </script>
