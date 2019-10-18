@@ -1,4 +1,4 @@
-// import 'babel-polyfill'
+import 'babel-polyfill'
 import Oidc from 'oidc-client'
 import { Dialog } from 'quasar'
 
@@ -85,9 +85,7 @@ mgr.events.addUserSignedOut(function () {
 
 export default ({ Vue }) => {
   const oidc = new Oidc.UserManager({ userStore: new Oidc.WebStorageStateStore() })
-  Vue.prototype.$oidc = oidc
-
-  Vue.prototype.$mgr = {
+  const $mgr = {
     getUserProfileNoSigIn: () => {
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
@@ -103,38 +101,37 @@ export default ({ Vue }) => {
       })
     },
     getUser: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(null)
           } else {
             return resolve(user)
           }
         }).catch(function (err) {
-          console.log('ERRO NO PLUGIN', err)
+          // console.log('ERRO NO PLUGIN', err)
           return reject(err)
         })
       })
     },
     getSignedIn: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(false)
           } else {
             return resolve(true)
           }
         }).catch(function (err) {
-          console.error(err)
+          // console.error(err)
           return reject(err)
         })
       })
     },
     signIn: () => {
+      console.log('CHAMOU O SIGNIN')
       mgr.signinRedirect().catch(function (err) {
         console.log(err)
       })
@@ -147,11 +144,10 @@ export default ({ Vue }) => {
       })
     },
     getToken: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(false)
           } else {
             return resolve(user)
@@ -163,11 +159,10 @@ export default ({ Vue }) => {
       })
     },
     getProfile: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(false)
           } else {
             return resolve(user.profile)
@@ -179,11 +174,10 @@ export default ({ Vue }) => {
       })
     },
     getIdToken: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(false)
           } else {
             return resolve(user.id_token)
@@ -195,11 +189,10 @@ export default ({ Vue }) => {
       })
     },
     getSessionState: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(false)
           } else {
             return resolve(user.session_state)
@@ -211,11 +204,10 @@ export default ({ Vue }) => {
       })
     },
     getAcessToken: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(false)
           } else {
             return resolve(user.access_token)
@@ -227,11 +219,10 @@ export default ({ Vue }) => {
       })
     },
     getScopes: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(false)
           } else {
             return resolve(user.scopes)
@@ -243,11 +234,10 @@ export default ({ Vue }) => {
       })
     },
     getRole: () => {
-      let self = this
       return new Promise((resolve, reject) => {
         mgr.getUser().then(function (user) {
           if (user == null) {
-            self.signIn()
+            $mgr.signIn()
             return resolve(false)
           } else {
             return resolve(user.profile.role)
@@ -259,4 +249,6 @@ export default ({ Vue }) => {
       })
     }
   }
+  Vue.prototype.$mgr = $mgr
+  Vue.prototype.$oidc = oidc
 }

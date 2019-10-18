@@ -8,7 +8,8 @@ module.exports = function (ctx) {
     boot: [
       'i18n',
       'axios',
-      'security-oidc'
+      'security-oidc',
+      'auth-router'
     ],
 
     css: [

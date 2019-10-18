@@ -24,7 +24,6 @@ export default {
       success => {
         let retorno = success.profile
         this.tempoAtividadeUsuarioMinutos = parseInt(retorno.numTempoInatividade)
-        // this.converterMinutosParaMilisegundos()
       },
       err => {
         console.log('Erro na recuperação de usuário', err)

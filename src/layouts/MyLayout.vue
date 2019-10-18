@@ -105,32 +105,9 @@ export default {
       dialogMS: null
     }
   },
-  created () {
-    this.$mgr.getUser().then(
-      success => {
-        this.userinfo = success
-        if (success.profile.transacoes) {
-          if (Array.isArray(success.profile.transacoes)) {
-            this.ws(success.profile.vchLogin)
-            success.profile.transacoes.forEach(element => {
-              this.transacoes.push(JSON.parse(element))
-            })
-          } else {
-            this.ws(success.profile.vchLogin)
-            this.transacoes.push(JSON.parse(success.profile.transacoes))
-          }
-        }
-        // success.profile.transacoes.forEach(element => {
-        //   this.transacoes.push(JSON.parse(element))
-        // })
-      },
-      err => {
-        console.log('Erro na recuperação de usuário page: layout/default.vue', err)
-      }
-    )
-  },
   mounted () {
     this.verificaVersaoNoCache()
+    this.getUSerOidc()
     this.$mgr.getSignedIn().then(
       success => {
         this.signedIn = success
@@ -146,6 +123,30 @@ export default {
   },
   methods: {
     openURL,
+    getUSerOidc () {
+      this.$mgr.getUser().then(
+        success => {
+          this.userinfo = success
+          if (success.profile.transacoes) {
+            if (Array.isArray(success.profile.transacoes)) {
+              this.ws(success.profile.vchLogin)
+              success.profile.transacoes.forEach(element => {
+                this.transacoes.push(JSON.parse(element))
+              })
+            } else {
+              this.ws(success.profile.vchLogin)
+              this.transacoes.push(JSON.parse(success.profile.transacoes))
+            }
+          }
+          console.log(this.transacoes)
+          // success.profile.transacoes.forEach(element => {
+          //   this.transacoes.push(JSON.parse(element))
+          // })
+        },
+        err => {
+          console.log('Erro na recuperação de usuário page: layout/default.vue', err)
+        })
+    },
     verificaVersaoNoCache () {
       if (localStorage.getItem('w3_NOMEAPP_version') !== process.env.VERSION_APP) {
         localStorage.setItem('w3_NOMEAPP_version', process.env.VERSION_APP)
@@ -160,8 +161,6 @@ export default {
       }
     },
     ws (login) {
-      // console.log('WS')
-      // console.log(login)
       const ws = new WebSocket(`${process.env.MULTISESSION}?clientId=ssa&usuario=${login}`)
       ws.onopen = () => console.log('Ws Connected')
       ws.onerror = () => console.log('Error on ws')

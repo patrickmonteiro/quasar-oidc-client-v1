@@ -19,10 +19,8 @@ export default {
   mounted () {
     this.$oidc.signinRedirectCallback()
       .then((user) => {
-        console.log('USER IN CALLBACK', user)
         window.location.href = process.env.REDIRECT_CALLBACK
       }).catch((err) => {
-        console.error('Erro signinRedirectCallback', err)
         if (err.message === 'No matching state found in storage') {
           this.$mgr.signIn()
             .then((suc) => {
